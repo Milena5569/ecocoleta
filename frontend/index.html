@@ -1,215 +1,217 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
     name="description"
     content="Painel de acompanhamento de coletas de resíduos da EcoColeta."
-  >
-  <title>EcoColeta | Painel de coletas</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="../frontend/js/app.js" defer></script>
+>
+    <title>EcoColeta | Painel de coletas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/app.js" defer></script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-content">
-      <a class="brand" href="#" aria-label="EcoColeta, início">
-        <span class="brand-mark" aria-hidden="true">E</span>
-        <span>EcoColeta</span>
-      </a>
+    <header class="site-header">
+        <div class="header-content">
+            <a class="brand" href="#dashboard-view" aria-label="EcoColeta, início">
+            <span class="brand-mark" aria-hidden="true">E</span>
+            <span>EcoColeta</span>
+            </a>
 
-      <nav class="main-navigation" aria-label="Navegação principal">
-        <button
-          class="navigation-button is-active"
-          type="button"
-          data-view-target="dashboard-view"
-          aria-controls="dashboard-view"
-          aria-current="page"
+            <nav class="main-navigation" aria-label="Navegação principal">
+            <button
+                class="navigation-button is-active"
+                type="button"
+                data-view-target="dashboard-view"
+                aria-controls="dashboard-view"
+                aria-current="page"
+            >
+                Navegação Principal
+            </button>
+            
+
+            <button
+                class="navigation-button"
+                type="button"
+                data-view-target="collections-view"
+                aria-controls="collections-view"
+            >
+                Coletas
+            </button>
+            </nav>
+
+            <button
+                class="button button-primary"
+                type="button"
+                data-action="open-create-dialog"
+            >
+                Nova coleta
+            </button>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <p
+            id="feedback-message"
+            class="feedback-message"
+            role="status"
+            aria-live="polite"
+            hidden
         >
-          Painel
-        </button>
-
-        <button
-          class="navigation-button"
-          type="button"
-          data-view-target="collections-view"
-          aria-controls="collections-view"
-        >
-          Coletas
-        </button>
-      </nav>
-
-      <button
-        class="button button-primary"
-        type="button"
-        data-action="open-create-dialog"
-      >
-        Nova coleta
-      </button>
-    </div>
-  </header>
-
-  <main class="page-content">
-    <p
-      id="feedback-message"
-      class="feedback-message"
-      role="status"
-      aria-live="polite"
-      hidden
-    ></p>
+        </p>
 
     <section
-      id="dashboard-view"
-      class="screen"
-      aria-labelledby="dashboard-title"
+        id="dashboard-view"
+        class="screen"
+        aria-labelledby="dashboard-title"
     >
-      <div class="page-heading">
+    <div class="page-heading">
         <div>
-          <p class="eyebrow">Acompanhamento</p>
-          <h1 id="dashboard-title">Painel de coletas</h1>
-          <p>Resumo das coletas e dos resíduos destinados.</p>
+            <p class="eyebrow">Acompanhamento</p>
+            <h1 id="dashboard-title">Painel de coletas</h1>
+            <p>Resumo das coletas e dos resíduos destinados.</p>
         </div>
-      </div>
+    </div>
 
-      <section class="metrics-grid" aria-label="Indicadores de coletas">
+    <section class="metrics-grid" aria-label="Indicadores de coletas">
         <article class="metric-card">
-          <h2>Total de coletas</h2>
-          <p id="metric-total" class="metric-value">—</p>
-          <p class="metric-caption">Registros cadastrados</p>
+            <h2>Total de coletas</h2>
+            <p id="metric-total" class="metric-value">—</p>
+            <p class="metric-caption">Registros cadastrados</p>
         </article>
 
         <article class="metric-card">
-          <h2>Realizadas</h2>
-          <p id="metric-completed" class="metric-value">—</p>
-          <p id="metric-completed-percentage" class="metric-caption">—</p>
+            <h2>Realizadas</h2>
+            <p id="metric-completed" class="metric-value">—</p>
+            <p id="metric-completed-percentage" class="metric-caption">—</p>
 
-          <div
+        <div
             class="progress-track"
             role="progressbar"
             aria-label="Percentual de coletas realizadas"
             aria-valuemin="0"
             aria-valuemax="100"
             aria-valuenow="0"
-          >
+        >
             <span id="completed-progress" class="progress-fill"></span>
-          </div>
+        </div>
         </article>
 
         <article class="metric-card">
-          <div class="metric-heading">
-            <h2>Agendadas</h2>
+            <div class="metric-heading">
+                <h2>Agendadas</h2>
             <span
-              id="scheduled-attention-badge"
-              class="attention-badge"
-              hidden
+                id="scheduled-attention-badge"
+                class="attention-badge"
+                hidden
             >
-              Atenção
+                Atenção
             </span>
-          </div>
-          <p id="metric-scheduled" class="metric-value">—</p>
-          <p class="metric-caption">Coletas aguardando realização</p>
-        </article>
+            </div>
+                <p id="metric-scheduled" class="metric-value">—</p>
+                <p class="metric-caption">Coletas aguardando realização</p>
+            </article>
 
-        <article class="metric-card">
-          <h2>Peso destinado</h2>
-          <p id="metric-destined-weight" class="metric-value">—</p>
-          <p class="metric-caption">Toneladas de resíduos coletados</p>
-        </article>
-      </section>
+            <article class="metric-card">
+                <h2>Peso destinado</h2>
+                <p id="metric-destined-weight" class="metric-value">—</p>
+                <p class="metric-caption">Toneladas de resíduos coletados</p>
+            </article>
+    </section>
 
-      <section
+    <section
         id="overdue-attention-card"
         class="attention-card"
         aria-labelledby="overdue-title"
         hidden
-      >
+    >
         <div>
-          <p class="eyebrow">Acompanhamento necessário</p>
-          <h2 id="overdue-title">Precisa de atenção</h2>
-          <p id="overdue-description"></p>
+            <p class="eyebrow">Acompanhamento necessário</p>
+            <h2 id="overdue-title">Precisa de atenção</h2>
+            <p id="overdue-description"></p>
         </div>
 
         <ul id="overdue-collections-list"></ul>
-      </section>
+    </section>
 
-      <section class="charts-grid" aria-label="Gráficos de coletas">
+    <section class="charts-grid" aria-label="Gráficos de coletas">
         <article class="chart-card">
-          <div class="section-heading">
+            <div class="section-heading">
             <div>
-              <p class="eyebrow">Volume ao longo do tempo</p>
-              <h2>Toneladas por mês</h2>
+                <p class="eyebrow">Volume ao longo do tempo</p>
+                <h2>Toneladas por mês</h2>
             </div>
-          </div>
+            </div>
 
-          <div
-            id="monthly-chart"
-            class="chart-placeholder"
-            role="img"
-            aria-label="Gráfico mensal de toneladas de resíduos"
-          >
+            <div
+                id="monthly-chart"
+                class="chart-placeholder"
+                role="img"
+                aria-label="Gráfico mensal de toneladas de resíduos"
+            >
             O gráfico será exibido aqui.
-          </div>
+            </div>
         </article>
 
         <article class="chart-card">
-          <div class="section-heading">
+            <div class="section-heading">
             <div>
-              <p class="eyebrow">Distribuição</p>
-              <h2>Composição por resíduo</h2>
+                <p class="eyebrow">Distribuição</p>
+                <h2>Composição por resíduo</h2>
             </div>
-          </div>
+            </div>
 
-          <div
-            id="composition-chart"
-            class="chart-placeholder"
-            role="img"
-            aria-label="Gráfico de composição por tipo de resíduo"
-          >
+            <div
+                id="composition-chart"
+                class="chart-placeholder"
+                role="img"
+                aria-label="Gráfico de composição por tipo de resíduo"
+            >
             O gráfico será exibido aqui.
-          </div>
+            </div>
 
-          <ul id="composition-legend" class="chart-legend"></ul>
+            <ul id="composition-legend" class="chart-legend"></ul>
         </article>
-      </section>
+    </section>
     </section>
 
     <section
-      id="collections-view"
-      class="screen"
-      aria-labelledby="collections-title"
-      hidden
+        id="collections-view"
+        class="screen"
+        aria-labelledby="collections-title"
+        hidden
     >
-      <div class="page-heading">
+        <div class="page-heading">
         <div>
-          <p class="eyebrow">Registros</p>
-          <h1 id="collections-title">Coletas</h1>
-          <p>Pesquise, filtre e gerencie as coletas cadastradas.</p>
+            <p class="eyebrow">Registros</p>
+            <h1 id="collections-title">Coletas</h1>
+            <p>Pesquise, filtre e gerencie as coletas cadastradas.</p>
         </div>
 
         <button
-          class="button button-primary"
-          type="button"
-          data-action="open-create-dialog"
+            class="button button-primary"
+            type="button"
+            data-action="open-create-dialog"
         >
-          Nova coleta
+            Nova coleta
         </button>
-      </div>
-
-      <form id="filters-form" class="filters-form">
-        <div class="form-field">
-          <label for="search-client">Buscar cliente</label>
-          <input
-            id="search-client"
-            name="cliente"
-            type="search"
-            placeholder="Digite o nome do cliente"
-          >
         </div>
 
-        <div class="form-field">
-          <label for="filter-status">Status</label>
-          <select id="filter-status" name="status">
+        <form id="filters-form" class="filters-form">
+            <div class="form-field">
+            <label for="search-client">Buscar cliente</label>
+            <input
+                id="search-client"
+                name="cliente"
+                type="search"
+                placeholder="Digite o nome do cliente"
+            >
+            </div>
+
+            <div class="form-field">
+                <label for="filter-status">Status</label>
+            <select id="filter-status" name="status">
             <option value="">Todos os status</option>
             <option value="Agendada">Agendada</option>
             <option value="Realizada">Realizada</option>
@@ -395,6 +397,7 @@
           name="pesoKg"
           type="number"
           min="0.01"
+          max="99999999.99"
           step="0.01"
           required
           aria-describedby="weight-kg-error"
