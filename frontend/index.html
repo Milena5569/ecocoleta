@@ -59,7 +59,6 @@
       hidden
     ></p>
 
-    <!-- Painel principal -->
     <section
       id="dashboard-view"
       class="screen"
@@ -73,7 +72,6 @@
         </div>
       </div>
 
-      <!-- Quatro indicadores -->
       <section class="metrics-grid" aria-label="Indicadores de coletas">
         <article class="metric-card">
           <h2>Total de coletas</h2>
@@ -101,7 +99,11 @@
         <article class="metric-card">
           <div class="metric-heading">
             <h2>Agendadas</h2>
-            <span id="scheduled-attention-badge" class="attention-badge" hidden>
+            <span
+              id="scheduled-attention-badge"
+              class="attention-badge"
+              hidden
+            >
               Atenção
             </span>
           </div>
@@ -116,7 +118,6 @@
         </article>
       </section>
 
-      <!-- Alerta de coletas agendadas com data passada -->
       <section
         id="overdue-attention-card"
         class="attention-card"
@@ -132,7 +133,6 @@
         <ul id="overdue-collections-list"></ul>
       </section>
 
-      <!-- Gráficos do painel -->
       <section class="charts-grid" aria-label="Gráficos de coletas">
         <article class="chart-card">
           <div class="section-heading">
@@ -174,7 +174,6 @@
       </section>
     </section>
 
-    <!-- Lista de coletas -->
     <section
       id="collections-view"
       class="screen"
@@ -197,7 +196,6 @@
         </button>
       </div>
 
-      <!-- Busca e filtros -->
       <form id="filters-form" class="filters-form">
         <div class="form-field">
           <label for="search-client">Buscar cliente</label>
@@ -245,13 +243,25 @@
         </button>
       </form>
 
-      <!-- Estados da lista -->
-      <p id="collections-loading" class="state-message" hidden>
+      <p
+        id="collections-loading"
+        class="state-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
         Carregando coletas…
       </p>
 
-      <div id="collections-error" class="state-message error-message" hidden>
-        <p>Não foi possível carregar as coletas.</p>
+      <div
+        id="collections-error"
+        class="state-message error-message"
+        role="alert"
+        hidden
+      >
+        <p id="collections-error-message">
+          Não foi possível carregar as coletas.
+        </p>
         <button
           class="button button-secondary"
           type="button"
@@ -261,7 +271,13 @@
         </button>
       </div>
 
-      <div id="collections-empty" class="empty-state" hidden>
+      <div
+        id="collections-empty"
+        class="empty-state"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
         <h2>Nenhuma coleta cadastrada</h2>
         <p>Cadastre a primeira coleta para começar o acompanhamento.</p>
         <button
@@ -273,7 +289,13 @@
         </button>
       </div>
 
-      <div id="filters-empty" class="empty-state" hidden>
+      <div
+        id="filters-empty"
+        class="empty-state"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
         <h2>Nenhum resultado encontrado</h2>
         <p>Tente mudar a busca ou os filtros selecionados.</p>
         <button
@@ -285,7 +307,6 @@
         </button>
       </div>
 
-      <!-- Tabela de registros -->
       <div id="collections-table-container" class="table-container" hidden>
         <table class="collections-table">
           <caption class="visually-hidden">
@@ -307,7 +328,6 @@
     </section>
   </main>
 
-  <!-- Formulário reutilizado para cadastrar e editar -->
   <dialog
     id="collection-dialog"
     class="dialog"
@@ -410,11 +430,14 @@
       </div>
 
       <div class="form-field">
-        <label for="observation">Observação <span>(opcional)</span></label>
+        <label for="observation">
+          Observação <span>(opcional)</span>
+        </label>
         <textarea
           id="observation"
           name="observacao"
           rows="3"
+          aria-describedby="observation-error"
         ></textarea>
         <small id="observation-error" class="field-error"></small>
       </div>
@@ -434,7 +457,6 @@
     </form>
   </dialog>
 
-  <!-- Confirmação antes de excluir -->
   <dialog
     id="delete-dialog"
     class="dialog dialog-confirmation"
@@ -464,7 +486,6 @@
     </div>
   </dialog>
 
-  <!-- Modelo de linha que o JavaScript poderá preencher -->
   <template id="collection-row-template">
     <tr>
       <td data-field="cliente"></td>

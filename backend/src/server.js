@@ -1,7 +1,8 @@
-
+//recepcionista da API
 
 require("dotenv").config();
 
+const coletasRoutes = require("./routes/coletas.routes");
 const express = require("express");
 const cors = require("cors");
 const database = require("./config/database");
@@ -13,22 +14,23 @@ origin: process.env.FRONTEND_URL
 }));
 
 app.use(express.json());
+app.use("/api/coletas", coletasRoutes);
 
 app.get("/api/health", async (req, res) => {
 try {
-    await database.query("SELECT 1");
+await database.query("SELECT 1");
 
-    res.json({
-    status: "ok",
-    database: "connected"
-    });
+res.json({
+status: "ok",
+database: "connected"
+});
 } catch (error) {
-    console.error("Falha ao conectar ao banco:", error.message);
+console.error("Falha ao conectar ao banco:", error.message);
 
-    res.status(500).json({
-    status: "error",
-    database: "disconnected"
-    });
+res.status(500).json({
+status: "error",
+database: "disconnected"
+});
 }
 });
 
