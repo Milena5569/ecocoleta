@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Painel de acompanhamento de coletas de resíduos da EcoColeta."
+  >
+  <title>EcoColeta | Painel de coletas</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-content">
+      <a class="brand" href="#" aria-label="EcoColeta, início">
+        <span class="brand-mark" aria-hidden="true">E</span>
+        <span>EcoColeta</span>
+      </a>
+
+      <nav class="main-navigation" aria-label="Navegação principal">
+        <button
+          class="navigation-button is-active"
+          type="button"
+          data-view-target="dashboard-view"
+          aria-controls="dashboard-view"
+          aria-current="page"
+        >
+          Painel
+        </button>
+
+        <button
+          class="navigation-button"
+          type="button"
+          data-view-target="collections-view"
+          aria-controls="collections-view"
+        >
+          Coletas
+        </button>
+      </nav>
+
+      <button
+        class="button button-primary"
+        type="button"
+        data-action="open-create-dialog"
+      >
+        Nova coleta
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <p
+      id="feedback-message"
+      class="feedback-message"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
+
+    <!-- Painel principal -->
+    <section
+      id="dashboard-view"
+      class="screen"
+      aria-labelledby="dashboard-title"
+    >
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Acompanhamento</p>
+          <h1 id="dashboard-title">Painel de coletas</h1>
+          <p>Resumo das coletas e dos resíduos destinados.</p>
+        </div>
+      </div>
+
+      <!-- Quatro indicadores -->
+      <section class="metrics-grid" aria-label="Indicadores de coletas">
+        <article class="metric-card">
+          <h2>Total de coletas</h2>
+          <p id="metric-total" class="metric-value">—</p>
+          <p class="metric-caption">Registros cadastrados</p>
+        </article>
+
+        <article class="metric-card">
+          <h2>Realizadas</h2>
+          <p id="metric-completed" class="metric-value">—</p>
+          <p id="metric-completed-percentage" class="metric-caption">—</p>
+
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Percentual de coletas realizadas"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span id="completed-progress" class="progress-fill"></span>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-heading">
+            <h2>Agendadas</h2>
+            <span id="scheduled-attention-badge" class="attention-badge" hidden>
+              Atenção
+            </span>
+          </div>
+          <p id="metric-scheduled" class="metric-value">—</p>
+          <p class="metric-caption">Coletas aguardando realização</p>
+        </article>
+
+        <article class="metric-card">
+          <h2>Peso destinado</h2>
+          <p id="metric-destined-weight" class="metric-value">—</p>
+          <p class="metric-caption">Toneladas de resíduos coletados</p>
+        </article>
+      </section>
+
+      <!-- Alerta de coletas agendadas com data passada -->
+      <section
+        id="overdue-attention-card"
+        class="attention-card"
+        aria-labelledby="overdue-title"
+        hidden
+      >
+        <div>
+          <p class="eyebrow">Acompanhamento necessário</p>
+          <h2 id="overdue-title">Precisa de atenção</h2>
+          <p id="overdue-description"></p>
+        </div>
+
+        <ul id="overdue-collections-list"></ul>
+      </section>
+
+      <!-- Gráficos do painel -->
+      <section class="charts-grid" aria-label="Gráficos de coletas">
+        <article class="chart-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Volume ao longo do tempo</p>
+              <h2>Toneladas por mês</h2>
+            </div>
+          </div>
+
+          <div
+            id="monthly-chart"
+            class="chart-placeholder"
+            role="img"
+            aria-label="Gráfico mensal de toneladas de resíduos"
+          >
+            O gráfico será exibido aqui.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Distribuição</p>
+              <h2>Composição por resíduo</h2>
+            </div>
+          </div>
+
+          <div
+            id="composition-chart"
+            class="chart-placeholder"
+            role="img"
+            aria-label="Gráfico de composição por tipo de resíduo"
+          >
+            O gráfico será exibido aqui.
+          </div>
+
+          <ul id="composition-legend" class="chart-legend"></ul>
+        </article>
+      </section>
+    </section>
+
+    <!-- Lista de coletas -->
+    <section
+      id="collections-view"
+      class="screen"
+      aria-labelledby="collections-title"
+      hidden
+    >
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Registros</p>
+          <h1 id="collections-title">Coletas</h1>
+          <p>Pesquise, filtre e gerencie as coletas cadastradas.</p>
+        </div>
+
+        <button
+          class="button button-primary"
+          type="button"
+          data-action="open-create-dialog"
+        >
+          Nova coleta
+        </button>
+      </div>
+
+      <!-- Busca e filtros -->
+      <form id="filters-form" class="filters-form">
+        <div class="form-field">
+          <label for="search-client">Buscar cliente</label>
+          <input
+            id="search-client"
+            name="cliente"
+            type="search"
+            placeholder="Digite o nome do cliente"
+          >
+        </div>
+
+        <div class="form-field">
+          <label for="filter-status">Status</label>
+          <select id="filter-status" name="status">
+            <option value="">Todos os status</option>
+            <option value="Agendada">Agendada</option>
+            <option value="Realizada">Realizada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="filter-waste-type">Tipo de resíduo</label>
+          <select id="filter-waste-type" name="tipoResiduo">
+            <option value="">Todos os tipos</option>
+            <option value="Papelão">Papelão</option>
+            <option value="Plástico">Plástico</option>
+            <option value="Metal">Metal</option>
+            <option value="Vidro">Vidro</option>
+            <option value="Óleo">Óleo</option>
+            <option value="Eletrônico">Eletrônico</option>
+          </select>
+        </div>
+
+        <button class="button button-secondary" type="reset">
+          Limpar filtros
+        </button>
+
+        <button
+          id="export-csv-button"
+          class="button button-secondary"
+          type="button"
+        >
+          Exportar CSV
+        </button>
+      </form>
+
+      <!-- Estados da lista -->
+      <p id="collections-loading" class="state-message" hidden>
+        Carregando coletas…
+      </p>
+
+      <div id="collections-error" class="state-message error-message" hidden>
+        <p>Não foi possível carregar as coletas.</p>
+        <button
+          class="button button-secondary"
+          type="button"
+          data-action="retry-load"
+        >
+          Tentar novamente
+        </button>
+      </div>
+
+      <div id="collections-empty" class="empty-state" hidden>
+        <h2>Nenhuma coleta cadastrada</h2>
+        <p>Cadastre a primeira coleta para começar o acompanhamento.</p>
+        <button
+          class="button button-primary"
+          type="button"
+          data-action="open-create-dialog"
+        >
+          Cadastrar coleta
+        </button>
+      </div>
+
+      <div id="filters-empty" class="empty-state" hidden>
+        <h2>Nenhum resultado encontrado</h2>
+        <p>Tente mudar a busca ou os filtros selecionados.</p>
+        <button
+          class="button button-secondary"
+          type="reset"
+          form="filters-form"
+        >
+          Limpar filtros
+        </button>
+      </div>
+
+      <!-- Tabela de registros -->
+      <div id="collections-table-container" class="table-container" hidden>
+        <table class="collections-table">
+          <caption class="visually-hidden">
+            Lista de coletas cadastradas, da mais recente para a mais antiga
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Tipo de resíduo</th>
+              <th scope="col">Peso</th>
+              <th scope="col">Data da coleta</th>
+              <th scope="col">Status</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="collections-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Formulário reutilizado para cadastrar e editar -->
+  <dialog
+    id="collection-dialog"
+    class="dialog"
+    aria-labelledby="collection-dialog-title"
+  >
+    <div class="dialog-heading">
+      <div>
+        <p class="eyebrow">Registro de coleta</p>
+        <h2 id="collection-dialog-title">Nova coleta</h2>
+      </div>
+
+      <button
+        class="icon-button"
+        type="button"
+        data-action="close-collection-dialog"
+        aria-label="Fechar formulário"
+      >
+        ×
+      </button>
+    </div>
+
+    <form id="collection-form" novalidate>
+      <input id="collection-id" name="id" type="hidden">
+
+      <div id="form-general-error" class="form-error" role="alert" hidden></div>
+
+      <div class="form-field">
+        <label for="client-name">Cliente</label>
+        <input
+          id="client-name"
+          name="cliente"
+          type="text"
+          minlength="3"
+          maxlength="120"
+          autocomplete="organization"
+          required
+          aria-describedby="client-name-error"
+        >
+        <small id="client-name-error" class="field-error"></small>
+      </div>
+
+      <div class="form-field">
+        <label for="waste-type">Tipo de resíduo</label>
+        <select
+          id="waste-type"
+          name="tipoResiduo"
+          required
+          aria-describedby="waste-type-error"
+        >
+          <option value="">Selecione um tipo</option>
+          <option value="Papelão">Papelão</option>
+          <option value="Plástico">Plástico</option>
+          <option value="Metal">Metal</option>
+          <option value="Vidro">Vidro</option>
+          <option value="Óleo">Óleo</option>
+          <option value="Eletrônico">Eletrônico</option>
+        </select>
+        <small id="waste-type-error" class="field-error"></small>
+      </div>
+
+      <div class="form-field">
+        <label for="weight-kg">Peso em quilogramas</label>
+        <input
+          id="weight-kg"
+          name="pesoKg"
+          type="number"
+          min="0.01"
+          step="0.01"
+          required
+          aria-describedby="weight-kg-error"
+        >
+        <small id="weight-kg-error" class="field-error"></small>
+      </div>
+
+      <div class="form-field">
+        <label for="collection-date">Data da coleta</label>
+        <input
+          id="collection-date"
+          name="dataColeta"
+          type="date"
+          required
+          aria-describedby="collection-date-error"
+        >
+        <small id="collection-date-error" class="field-error"></small>
+      </div>
+
+      <div class="form-field">
+        <label for="collection-status">Status</label>
+        <select
+          id="collection-status"
+          name="status"
+          required
+          aria-describedby="collection-status-error"
+        >
+          <option value="Agendada">Agendada</option>
+          <option value="Realizada">Realizada</option>
+          <option value="Cancelada">Cancelada</option>
+        </select>
+        <small id="collection-status-error" class="field-error"></small>
+      </div>
+
+      <div class="form-field">
+        <label for="observation">Observação <span>(opcional)</span></label>
+        <textarea
+          id="observation"
+          name="observacao"
+          rows="3"
+        ></textarea>
+        <small id="observation-error" class="field-error"></small>
+      </div>
+
+      <div class="dialog-actions">
+        <button
+          class="button button-secondary"
+          type="button"
+          data-action="close-collection-dialog"
+        >
+          Cancelar
+        </button>
+        <button class="button button-primary" type="submit">
+          Salvar coleta
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Confirmação antes de excluir -->
+  <dialog
+    id="delete-dialog"
+    class="dialog dialog-confirmation"
+    aria-labelledby="delete-dialog-title"
+  >
+    <p class="eyebrow">Confirmação</p>
+    <h2 id="delete-dialog-title">Excluir coleta?</h2>
+    <p id="delete-confirmation-message">
+      Esta ação removerá o registro selecionado.
+    </p>
+
+    <div class="dialog-actions">
+      <button
+        class="button button-secondary"
+        type="button"
+        data-action="cancel-delete"
+      >
+        Cancelar
+      </button>
+      <button
+        class="button button-danger"
+        type="button"
+        data-action="confirm-delete"
+      >
+        Excluir
+      </button>
+    </div>
+  </dialog>
+
+  <!-- Modelo de linha que o JavaScript poderá preencher -->
+  <template id="collection-row-template">
+    <tr>
+      <td data-field="cliente"></td>
+      <td data-field="tipoResiduo"></td>
+      <td data-field="pesoKg"></td>
+      <td data-field="dataColeta"></td>
+      <td>
+        <span class="status-badge" data-field="status"></span>
+      </td>
+      <td>
+        <div class="table-actions">
+          <button
+            class="button button-small button-secondary"
+            type="button"
+            data-action="edit"
+            aria-label="Editar coleta"
+          >
+            Editar
+          </button>
+          <button
+            class="button button-small button-danger"
+            type="button"
+            data-action="delete"
+            aria-label="Excluir coleta"
+          >
+            Excluir
+          </button>
+        </div>
+      </td>
+    </tr>
+  </template>
+</body>
+</html>
