@@ -1,3 +1,5 @@
+//Coleta, atualiza, edita, exclui dados
+
 const express = require("express"); //importa o express para criar as rotas da API
 const database = require("../config/database"); //importa a conexão com o banco de dados
 const { validarColeta } = require("../validators/coletas.validator"); //importa a função de validação de coletas

@@ -2,7 +2,6 @@
 
 require("dotenv").config(); //carrega as variaveis do env
 const mysql = require("mysql2/promise"); //pacote que permite a conexão com o MySQL
- 
 const pool = mysql.createPool({ // cria uma gama de conexões que a API pode utilizar
 host: process.env.DB_HOST,
 port: Number(process.env.DB_PORT),
