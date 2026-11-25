@@ -4,6 +4,21 @@ const { validarColeta } = require("../validators/coletas.validator");
 
 const router = express.Router();
 
+const TIPOS_RESIDUO = new Set([
+  "Papelão",
+  "Plástico",
+  "Metal",
+  "Vidro",
+  "Óleo",
+  "Eletrônico"
+]);
+
+const STATUS_VALIDOS = new Set([
+  "Agendada",
+  "Realizada",
+  "Cancelada"
+]);
+
 const COLUNAS_COLETA = `
   id,
   cliente,
@@ -17,26 +32,84 @@ const COLUNAS_COLETA = `
 function obterIdValido(valor) {
   const id = Number(valor);
 
-  return Number.isSafeInteger(id) && id > 0 ? id : null;
+  return Number.isSafeInteger(id) && id > 0
+    ? id
+    : null;
 }
 
 async function buscarColetaPorId(id) {
   const [linhas] = await database.execute(
-    `SELECT ${COLUNAS_COLETA} FROM coletas WHERE id = ?`,
+    `SELECT ${COLUNAS_COLETA}
+     FROM coletas
+     WHERE id = ?`,
     [id]
   );
 
   return linhas[0] || null;
 }
 
-// Lista todas as coletas, da mais recente para a mais antiga.
+// GET /api/coletas
+// Aceita filtros opcionais: status, tipoResiduo e cliente.
 router.get("/", async (req, res, next) => {
   try {
-    const [coletas] = await database.query(`
-      SELECT ${COLUNAS_COLETA}
-      FROM coletas
-      ORDER BY data_coleta DESC, id DESC
-    `);
+    const partesWhere = [];
+    const parametros = [];
+
+    const { status, tipoResiduo, cliente } = req.query;
+
+    if (status !== undefined) {
+      if (typeof status !== "string" || !STATUS_VALIDOS.has(status)) {
+        return res.status(400).json({
+          message: "O filtro de status é inválido."
+        });
+      }
+
+      partesWhere.push("status = ?");
+      parametros.push(status);
+    }
+
+    if (tipoResiduo !== undefined) {
+      if (
+        typeof tipoResiduo !== "string" ||
+        !TIPOS_RESIDUO.has(tipoResiduo)
+      ) {
+        return res.status(400).json({
+          message: "O filtro de tipo de resíduo é inválido."
+        });
+      }
+
+      partesWhere.push("tipo_residuo = ?");
+      parametros.push(tipoResiduo);
+    }
+
+    if (cliente !== undefined) {
+      if (typeof cliente !== "string") {
+        return res.status(400).json({
+          message: "O filtro de cliente é inválido."
+        });
+      }
+
+      const termo = cliente.trim();
+
+      if (termo) {
+        const termoEscapado = termo.replace(/[!%_]/g, "!$&");
+        partesWhere.push("cliente LIKE ? ESCAPE '!'");
+        parametros.push(`%${termoEscapado}%`);
+      }
+    }
+
+    const where =
+      partesWhere.length > 0
+        ? `WHERE ${partesWhere.join(" AND ")}`
+        : "";
+
+    const [coletas] = await database.execute(
+      `SELECT ${COLUNAS_COLETA}
+       FROM coletas
+       ${where}
+       ORDER BY data_coleta DESC, id DESC`,
+      parametros
+    );
 
     res.json(coletas);
   } catch (error) {
@@ -44,7 +117,32 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// Cadastra uma coleta.
+// GET /api/coletas/:id
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = obterIdValido(req.params.id);
+
+    if (!id) {
+      return res.status(400).json({
+        message: "O identificador da coleta é inválido."
+      });
+    }
+
+    const coleta = await buscarColetaPorId(id);
+
+    if (!coleta) {
+      return res.status(404).json({
+        message: "Coleta não encontrada."
+      });
+    }
+
+    res.json(coleta);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/coletas
 router.post("/", async (req, res, next) => {
   try {
     const resultado = validarColeta(req.body);
@@ -85,7 +183,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// Edita uma coleta. A validação é a mesma do cadastro.
+// PUT /api/coletas/:id
 router.put("/:id", async (req, res, next) => {
   try {
     const id = obterIdValido(req.params.id);
@@ -146,7 +244,7 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-// Exclui uma coleta.
+// DELETE /api/coletas/:id
 router.delete("/:id", async (req, res, next) => {
   try {
     const id = obterIdValido(req.params.id);

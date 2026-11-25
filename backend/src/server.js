@@ -35,6 +35,19 @@ database: "disconnected"
 });
 
 const port = process.env.PORT || 3000;
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    message: "Endpoint da API não encontrado."
+  });
+});
+
+app.use((error, req, res, next) => {
+  console.error("Erro na API:", error.message);
+
+  res.status(500).json({
+    message: "Ocorreu um erro interno. Tente novamente."
+  });
+});
 
 app.listen(port, () => {
 console.log(`API disponível em http://localhost:${port}`);
