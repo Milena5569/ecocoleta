@@ -302,38 +302,58 @@ button {
   transition: width 250ms ease;
 }
 
-/* Cartão de coletas atrasadas */
+/* Cartão escuro de coletas atrasadas */
 
-.attention-card {
+.attention-card--dark {
   margin-bottom: 24px;
-  padding: 22px 26px;
-  display: flex;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
   border-radius: var(--raio-cartao);
-  background: var(--cor-escura);
+  background: #262b3c;
   color: var(--cor-superficie);
   box-shadow: var(--sombra-cartao);
 }
 
-.attention-card .eyebrow {
-  color: #ffb184;
+.attention-card--dark[hidden] {
+  display: none;
 }
 
-.attention-card h2 {
+.attention-card--dark .eyebrow {
+  color: #ffccbc;
+}
+
+.attention-card--dark h2 {
   margin: 7px 0;
+  color: var(--cor-superficie);
   font-size: 1.25rem;
 }
 
-.attention-card p:not(.eyebrow) {
+.attention-card--dark p:not(.eyebrow) {
   margin: 0;
   color: rgb(255 255 255 / 78%);
 }
 
-.attention-card ul {
+.attention-card__list {
+  width: 100%;
+  max-height: 220px;
   margin: 0;
-  padding-left: 20px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.attention-card__list li {
+  padding: 12px 14px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 8%);
+  color: var(--cor-superficie);
+  line-height: 1.4;
 }
 
 /* Gráficos */
@@ -415,7 +435,10 @@ button {
 
 .composition-item {
   display: grid;
-  grid-template-columns: minmax(90px, 0.8fr) minmax(70px, 1.5fr) minmax(110px, auto);
+  grid-template-columns:
+    minmax(90px, 0.8fr)
+    minmax(70px, 1.5fr)
+    minmax(110px, auto);
   align-items: center;
   gap: 12px;
 }
@@ -451,13 +474,44 @@ button {
   display: none;
 }
 
+/* Filtro de período do painel */
+
+.dashboard-period-form {
+  margin-bottom: 24px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-cartao);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-cartao);
+}
+
+.dashboard-period-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#dashboard-period-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
 /* Busca, filtros e tabela */
 
 .filters-form {
   margin-bottom: 20px;
   padding: 18px;
   display: grid;
-  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) minmax(170px, 1.2fr) auto auto;
+  grid-template-columns:
+    minmax(200px, 2fr)
+    minmax(150px, 1fr)
+    minmax(170px, 1.2fr)
+    auto
+    auto;
   align-items: end;
   gap: 14px;
   border: 1px solid var(--cor-borda);
@@ -724,12 +778,12 @@ textarea:focus-visible {
   }
 
   .dashboard-period-form {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-.dashboard-period-actions {
-  grid-column: 1 / -1;
-}
+  .dashboard-period-actions {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 760px) {
@@ -762,30 +816,30 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .attention-card {
-    align-items: flex-start;
-    flex-direction: column;
+  .attention-card--dark {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
   }
 }
 
 @media (max-width: 560px) {
-
   .dashboard-period-form {
-  grid-template-columns: 1fr;
-}
+    grid-template-columns: 1fr;
+  }
 
-.dashboard-period-actions {
-  grid-column: auto;
-  flex-direction: column;
-}
+  .dashboard-period-actions {
+    grid-column: auto;
+    flex-direction: column;
+  }
 
-.dashboard-period-actions .button {
-  width: 100%;
-}
+  .dashboard-period-actions .button {
+    width: 100%;
+  }
 
-#dashboard-period-error {
-  grid-column: auto;
-}
+  #dashboard-period-error {
+    grid-column: auto;
+  }
 
   .header-content {
     width: calc(100% - 28px);
@@ -867,28 +921,4 @@ textarea:focus-visible {
   .table-actions {
     flex-direction: column;
   }
-}
-
-.dashboard-period-form {
-  margin-bottom: 24px;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) auto;
-  align-items: end;
-  gap: 14px;
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-cartao);
-  background: var(--cor-superficie);
-  box-shadow: var(--sombra-cartao);
-}
-
-.dashboard-period-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-#dashboard-period-error {
-  grid-column: 1 / -1;
-  margin: 0;
 }
