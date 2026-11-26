@@ -2,12 +2,18 @@
 
 Aplicação web para cadastrar e acompanhar coletas de resíduos. O sistema possui uma interface web, uma API em Node.js e um banco de dados MySQL.
 
+## Acessos de produção
+
+- **Frontend (Vercel):** [https://ecocoleta-frontend.vercel.app/](https://ecocoleta-frontend.vercel.app/)
+- **API (Railway):** [https://ecocoleta-production.up.railway.app](https://ecocoleta-production.up.railway.app)
+- **Verificação da API:** [https://ecocoleta-production.up.railway.app/api/health](https://ecocoleta-production.up.railway.app/api/health)
+
 ## Tecnologias
 
 - HTML, CSS e JavaScript
 - Node.js e Express
-- MySQL e `mysql2`
-- `cors` e `dotenv`
+- MySQL e \`mysql2\`
+- \`cors\` e \`dotenv\`
 
 ## Pré-requisitos
 
@@ -22,10 +28,10 @@ Antes de iniciar, instale:
 
 Clone o repositório:
 
-```powershell
+\`\`\`powershell
 git clone https://github.com/Milena5569/ecocoleta.git
 cd ecocoleta
-```
+\`\`\`
 
 Se você já tem o projeto no computador, abra a pasta do projeto no VS Code e continue na próxima etapa.
 
@@ -35,25 +41,25 @@ Se você já tem o projeto no computador, abra a pasta do projeto no VS Code e c
 2. Abra o MySQL Workbench e conecte-se ao servidor local.
 3. Abra uma aba de consulta SQL e execute:
 
-```sql
+\`\`\`sql
 CREATE DATABASE IF NOT EXISTS ecocoleta
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
-```
+\`\`\`
 
-4. No Workbench, abra e execute o arquivo `backend/sql/schema.sql`. Ele cria a tabela `coletas` e suas regras de validação.
+4. No Workbench, abra e execute o arquivo \`backend/sql/schema.sql\`. Ele cria a tabela \`coletas\` e suas regras de validação.
 
 ## 3. Configurar as variáveis locais
 
 No PowerShell, na pasta principal do projeto, execute:
 
-```powershell
-Copy-Item .\backend\.env.example .\backend\.env
-```
+\`\`\`powershell
+Copy-Item .\\backend\\.env.example .\\backend\\.env
+\`\`\`
 
-Abra `backend/.env` no VS Code e informe a senha configurada para o usuário MySQL local. Exemplo:
+Abra \`backend/.env\` no VS Code e informe a senha configurada para o usuário MySQL local. Exemplo:
 
-```env
+\`\`\`env
 PORT=3000
 DB_HOST=localhost
 DB_PORT=3306
@@ -61,48 +67,48 @@ DB_USER=root
 DB_PASSWORD=sua_senha_local
 DB_NAME=ecocoleta
 FRONTEND_URL=http://127.0.0.1:5500
-```
+\`\`\`
 
-Troque `sua_senha_local` pela sua senha do MySQL. O arquivo `.env` contém configurações privadas e não deve ser enviado ao GitHub.
+Troque \`sua_senha_local\` pela sua senha do MySQL. O arquivo \`.env\` contém configurações privadas e não deve ser enviado ao GitHub.
 
 ## 4. Instalar as dependências e iniciar a API
 
-No terminal do VS Code, entre na pasta `backend`:
+No terminal do VS Code, entre na pasta \`backend\`:
 
-```powershell
-cd .\backend
+\`\`\`powershell
+cd .\\backend
 npm.cmd install
 npm.cmd run dev
-```
+\`\`\`
 
 Mantenha esse terminal aberto enquanto estiver usando o sistema. Para conferir a API, acesse:
 
-```text
+\`\`\`text
 http://localhost:3000/api/health
-```
+\`\`\`
 
 A resposta esperada é:
 
-```json
+\`\`\`json
 {
   "status": "ok",
   "database": "connected"
 }
-```
+\`\`\`
 
 ## 5. Abrir o front-end
 
 Com a API em execução:
 
-1. No VS Code, localize `frontend/index.html`.
+1. No VS Code, localize \`frontend/index.html\`.
 2. Clique com o botão direito no arquivo e escolha **Open with Live Server**.
 3. O site será aberto em um endereço parecido com:
 
-```text
+\`\`\`text
 http://127.0.0.1:5500/frontend/index.html
-```
+\`\`\`
 
-Abra o site pelo Live Server, e não diretamente pelo caminho `file:///...`. A origem do Live Server deve corresponder ao valor `FRONTEND_URL` configurado no `backend/.env`.
+Abra o site pelo Live Server, e não diretamente pelo caminho \`file:///...\`. A origem do Live Server deve corresponder ao valor \`FRONTEND_URL\` configurado no \`backend/.env\`.
 
 ## 6. Usar o sistema
 
@@ -110,9 +116,9 @@ Na interface, é possível cadastrar coletas, consultar a tabela, editar e exclu
 
 Os registros são armazenados no MySQL. Para conferir a lista retornada pela API, acesse:
 
-```text
+\`\`\`text
 http://localhost:3000/api/coletas
-```
+\`\`\`
 
 ## 7. Encerrar a API
 
@@ -120,8 +126,7 @@ No terminal em que a API está rodando, pressione **Ctrl+C**.
 
 ## Observação para PowerShell
 
-Neste projeto, os comandos de npm estão escritos como `npm.cmd` para funcionar no PowerShell do Windows quando a execução de scripts do sistema estiver restrita. Em outros terminais, como Prompt de Comando, use `npm` no lugar de `npm.cmd`.
-
+Neste projeto, os comandos de npm estão escritos como \`npm.cmd\` para funcionar no PowerShell do Windows quando a execução de scripts do sistema estiver restrita. Em outros terminais, como Prompt de Comando, use \`npm\` no lugar de \`npm.cmd\`.
 
 ## Diferenciais
 
@@ -143,6 +148,28 @@ O sistema informa quando o mês inicial é posterior ao mês final. Ao limpar o 
 
 O Painel exibe um cartão de destaque em azul-escuro quando existem coletas com status **Agendada** cuja data já passou. O cartão lista o cliente e a data de cada coleta pendente. Ele fica oculto quando não há registros nessa situação e, quando um período é selecionado no painel, considera apenas as coletas dentro do intervalo escolhido.
 
+### Favicon
+
 Favicon em SVG com a inicial e as cores da identidade visual do EcoColeta, exibido na aba do navegador.
 
+## Melhorias que faria com mais tempo
 
+Com mais tempo, eu evoluiria o EcoColeta em três frentes:
+
+- **Painel mais útil para decisões:** permitir comparar o período selecionado com o período anterior, mostrando a variação de coletas e de peso por resíduo. Também incluiria metas configuráveis para acompanhar o progresso ao longo do tempo.
+- **Histórico de alterações:** registrar quem cadastrou, editou ou excluiu cada coleta e quando a ação ocorreu. Isso facilitaria auditorias e ajudaria a identificar alterações acidentais.
+- **Mais segurança e cobertura de testes:** adicionar autenticação para os operadores e ampliar os testes para verificar as rotas da API e os cálculos do painel, além das validações já testadas.
+
+### Melhoria proposta para o painel de referência
+
+Eu transformaria o painel em uma ferramenta de acompanhamento operacional. Além dos números do período, ele poderia comparar os resultados com o período anterior e destacar aumentos ou reduções por tipo de resíduo. Ao selecionar um gráfico ou indicador, a pessoa poderia consultar as coletas que compõem aquele resultado.
+
+Essas comparações seriam calculadas a partir dos registros disponíveis. Indicadores ambientais, como estimativas de material desviado de aterros ou de emissões evitadas, só seriam apresentados com uma metodologia e fontes de referência documentadas.
+
+### Visão futura: rastreabilidade da coleta à destinação
+
+Como evolução de maior impacto, eu transformaria o EcoColeta em uma plataforma de rastreabilidade do ciclo do resíduo. Cada coleta teria um QR Code para consultar seu histórico, desde o agendamento até a confirmação de recebimento pelo destino final, com registros de data, responsável e documentos comprobatórios.
+
+No painel, isso permitiria acompanhar não apenas o peso coletado, mas também o peso com destinação confirmada, pendências de comprovação e o histórico por tipo de resíduo. A melhoria poderia reduzir controles manuais e facilitar a consulta de informações em auditorias e relatórios ambientais.
+
+Eu começaria com um fluxo simples de confirmação de recebimento e anexação de comprovantes. Depois, avaliaria integrações com operadores e destinos parceiros, sempre mantendo o histórico das alterações.
