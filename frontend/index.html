@@ -74,6 +74,34 @@
         </div>
     </div>
 
+    <form id="dashboard-period-form" class="dashboard-period-form">
+  <div class="form-field">
+    <label for="dashboard-start-month">Mês inicial</label>
+    <input id="dashboard-start-month" type="month">
+  </div>
+
+  <div class="form-field">
+    <label for="dashboard-end-month">Mês final</label>
+    <input id="dashboard-end-month" type="month">
+  </div>
+
+  <div class="dashboard-period-actions">
+    <button class="button button-primary" type="submit">
+      Aplicar período
+    </button>
+    <button class="button button-secondary" type="reset">
+      Limpar período
+    </button>
+  </div>
+
+        <p
+          id="dashboard-period-error"
+          class="field-error"
+          role="alert"
+          hidden
+        ></p>
+    </form>
+
     <section class="metrics-grid" aria-label="Indicadores de coletas">
         <article class="metric-card">
             <h2>Total de coletas</h2>

@@ -1,4 +1,11 @@
- "use strict";
+"use strict";
+
+const formularioPeriodoPainel = document.querySelector(
+  "#dashboard-period-form"
+);
+const mesInicialPainel = document.querySelector("#dashboard-start-month");
+const mesFinalPainel = document.querySelector("#dashboard-end-month");
+const erroPeriodoPainel = document.querySelector("#dashboard-period-error");
 
 const API_COLETAS_URL = "http://localhost:3000/api/coletas";
 
@@ -49,6 +56,7 @@ const dialogoExclusao = document.querySelector("#delete-dialog");
 
 let todasAsColetas = [];
 let idDaColetaParaExcluir = null;
+let periodoPainelAtivo = null;
 
 function formatarToneladas(pesoKg) {
   const toneladas = Number(pesoKg) / 1000;
@@ -61,6 +69,34 @@ function formatarPercentual(valor) {
   const numero = Number.isFinite(valor) ? valor : 0;
 
   return `${formatadorPercentual.format(numero)}%`;
+}
+
+function filtrarColetasPorPeriodo(coletas, periodo) {
+  if (!periodo) {
+    return coletas;
+  }
+
+  return coletas.filter((coleta) => {
+    const dataISO = obterDataISO(coleta.dataColeta);
+
+    if (!dataISO) {
+      return false;
+    }
+
+    const mesColeta = dataISO.slice(0, 7);
+
+    return mesColeta >= periodo.inicio && mesColeta <= periodo.fim;
+  });
+}
+
+function validarMesISO(valor) {
+  if (typeof valor !== "string" || !/^\d{4}-\d{2}$/.test(valor)) {
+    return false;
+  }
+
+  const mes = Number(valor.slice(5, 7));
+
+  return mes >= 1 && mes <= 12;
 }
 
 function obterDataISO(valor) {
@@ -158,18 +194,45 @@ function calcularIndicadores(coletas) {
   };
 }
 
-function calcularDadosMensais(coletasRealizadas) {
+function calcularDadosMensais(coletasRealizadas, periodo = null) {
   const agora = new Date();
 
-  const meses = Array.from({ length: 6 }, (_, indice) => {
+  const inicio = periodo
+    ? (() => {
+        const [ano, mes] = periodo.inicio.split("-").map(Number);
+
+        return new Date(ano, mes - 1, 1);
+      })()
+    : new Date(agora.getFullYear(), agora.getMonth() - 5, 1);
+
+  const quantidadeMeses = periodo
+    ? (() => {
+        const [anoInicial, mesInicial] = periodo.inicio
+          .split("-")
+          .map(Number);
+
+        const [anoFinal, mesFinal] = periodo.fim
+          .split("-")
+          .map(Number);
+
+        return (
+          (anoFinal - anoInicial) * 12 +
+          (mesFinal - mesInicial) +
+          1
+        );
+      })()
+    : 6;
+
+  const meses = Array.from({ length: quantidadeMeses }, (_, indice) => {
     const data = new Date(
-      agora.getFullYear(),
-      agora.getMonth() - (5 - indice),
+      inicio.getFullYear(),
+      inicio.getMonth() + indice,
       1
     );
 
-    const chave =
-      `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}`;
+    const chave = `${data.getFullYear()}-${String(
+      data.getMonth() + 1
+    ).padStart(2, "0")}`;
 
     const rotulo = new Intl.DateTimeFormat("pt-BR", {
       month: "short",
@@ -186,9 +249,7 @@ function calcularDadosMensais(coletasRealizadas) {
     };
   });
 
-  const porMes = new Map(
-    meses.map((mes) => [mes.chave, mes])
-  );
+  const porMes = new Map(meses.map((mes) => [mes.chave, mes]));
 
   for (const coleta of coletasRealizadas) {
     const data = obterDataISO(coleta.dataColeta);
@@ -244,7 +305,7 @@ function calcularComposicaoPorResiduo(coletasRealizadas) {
     .sort((a, b) => b.pesoKg - a.pesoKg);
 }
 
-function atualizarIndicadores(coletas) {
+function atualizarIndicadores(coletas, periodo = null) {
   const registros = Array.isArray(coletas) ? coletas : [];
   const indicadores = calcularIndicadores(registros);
 
@@ -285,13 +346,19 @@ function atualizarIndicadores(coletas) {
   );
 
   barraProgresso.style.width = `${percentualLimitado}%`;
+
   trilhaProgresso.setAttribute(
     "aria-valuenow",
     percentualLimitado.toFixed(1)
   );
 
   atualizarCartaoAtrasadas(registros);
-  desenharGraficoMensal(calcularDadosMensais(realizadas));
+
+  desenharGraficoMensal(
+    calcularDadosMensais(realizadas, periodo),
+    periodo
+  );
+
   desenharComposicao(calcularComposicaoPorResiduo(realizadas));
 }
 
@@ -322,7 +389,9 @@ function atualizarCartaoAtrasadas(coletas) {
   descricao.textContent =
     atrasadas.length === 1
       ? "Há uma coleta agendada com data passada."
-      : `Há ${formatadorQuantidade.format(atrasadas.length)} coletas agendadas com data passada.`;
+      : `Há ${formatadorQuantidade.format(
+          atrasadas.length
+        )} coletas agendadas com data passada.`;
 
   for (const coleta of atrasadas) {
     const item = document.createElement("li");
@@ -334,7 +403,7 @@ function atualizarCartaoAtrasadas(coletas) {
   }
 }
 
-function desenharGraficoMensal(dadosMensais) {
+function desenharGraficoMensal(dadosMensais, periodo = null) {
   const grafico = document.querySelector("#monthly-chart");
 
   grafico.replaceChildren();
@@ -344,13 +413,18 @@ function desenharGraficoMensal(dadosMensais) {
     ...dadosMensais.map((mes) => mes.toneladas)
   );
 
+  const descricaoPeriodo = periodo
+    ? "no período selecionado"
+    : "nos últimos seis meses";
+
   if (maiorValor === 0) {
-    grafico.textContent =
-      "Ainda não há coletas realizadas para exibir.";
+    grafico.textContent = periodo
+      ? "Ainda não há coletas realizadas no período selecionado."
+      : "Ainda não há coletas realizadas para exibir.";
 
     grafico.setAttribute(
       "aria-label",
-      "Sem coletas realizadas nos últimos seis meses"
+      `Sem coletas realizadas ${descricaoPeriodo}`
     );
 
     return;
@@ -358,7 +432,7 @@ function desenharGraficoMensal(dadosMensais) {
 
   grafico.setAttribute(
     "aria-label",
-    "Toneladas de coletas realizadas por mês nos últimos seis meses"
+    `Toneladas de coletas realizadas por mês ${descricaoPeriodo}`
   );
 
   for (const mes of dadosMensais) {
@@ -377,7 +451,10 @@ function desenharGraficoMensal(dadosMensais) {
     barra.style.height =
       mes.toneladas === 0
         ? "0%"
-        : `${Math.max((mes.toneladas / maiorValor) * 100, 2)}%`;
+        : `${Math.max(
+            (mes.toneladas / maiorValor) * 100,
+            2
+          )}%`;
 
     barra.setAttribute("aria-hidden", "true");
     trilha.append(barra);
@@ -437,7 +514,9 @@ function desenharComposicao(composicao) {
     const valor = document.createElement("span");
     valor.className = "composition-value";
     valor.textContent =
-      `${formatarToneladas(residuo.pesoKg)} · ${formatarPercentual(residuo.percentual)}`;
+      `${formatarToneladas(residuo.pesoKg)} · ${formatarPercentual(
+        residuo.percentual
+      )}`;
 
     item.append(rotulo, trilha, valor);
     grafico.append(item);
@@ -510,6 +589,7 @@ function desenharTabela(coletas) {
     );
 
     const botaoEditar = linha.querySelector('[data-action="edit"]');
+
     botaoEditar.dataset.collectionId = String(coleta.id);
     botaoEditar.setAttribute(
       "aria-label",
@@ -517,6 +597,7 @@ function desenharTabela(coletas) {
     );
 
     const botaoExcluir = linha.querySelector('[data-action="delete"]');
+
     botaoExcluir.dataset.collectionId = String(coleta.id);
     botaoExcluir.setAttribute(
       "aria-label",
@@ -534,7 +615,12 @@ function atualizarListaDeColetas(coletas) {
 
   todasAsColetas = Array.isArray(coletas) ? coletas : [];
 
-  atualizarIndicadores(todasAsColetas);
+  const coletasDoPainel = filtrarColetasPorPeriodo(
+    todasAsColetas,
+    periodoPainelAtivo
+  );
+
+  atualizarIndicadores(coletasDoPainel, periodoPainelAtivo);
 
   const coletasVisiveis = obterColetasFiltradas();
   const naoHaColetas = todasAsColetas.length === 0;
@@ -625,6 +711,7 @@ function validarFormularioColeta() {
   const status = document.querySelector("#collection-status");
 
   const camposComErro = [];
+
   const permitidosStatus = [
     "Agendada",
     "Realizada",
@@ -895,7 +982,9 @@ async function confirmarExclusao() {
 
   try {
     const response = await fetch(
-      `${API_COLETAS_URL}/${encodeURIComponent(idDaColetaParaExcluir)}`,
+      `${API_COLETAS_URL}/${encodeURIComponent(
+        idDaColetaParaExcluir
+      )}`,
       { method: "DELETE" }
     );
 
@@ -964,6 +1053,45 @@ function exportarColetasCsv() {
   link.click();
 
   setTimeout(() => URL.revokeObjectURL(endereco), 1000);
+}
+
+if (formularioPeriodoPainel) {
+  formularioPeriodoPainel.addEventListener("submit", (event) => {
+    event.preventDefault();
+    erroPeriodoPainel.textContent = "";
+
+    const inicio = mesInicialPainel.value;
+    const fim = mesFinalPainel.value;
+
+    if (!validarMesISO(inicio) || !validarMesISO(fim)) {
+      erroPeriodoPainel.textContent =
+        "Informe o mês inicial e o mês final do período.";
+      return;
+    }
+
+    if (inicio > fim) {
+      erroPeriodoPainel.textContent =
+        "O mês inicial deve ser anterior ou igual ao mês final.";
+
+      mesInicialPainel.focus();
+      return;
+    }
+
+    periodoPainelAtivo = { inicio, fim };
+
+    atualizarIndicadores(
+      filtrarColetasPorPeriodo(todasAsColetas, periodoPainelAtivo),
+      periodoPainelAtivo
+    );
+  });
+
+  formularioPeriodoPainel.addEventListener("reset", () => {
+    setTimeout(() => {
+      periodoPainelAtivo = null;
+      erroPeriodoPainel.textContent = "";
+      atualizarIndicadores(todasAsColetas, null);
+    }, 0);
+  });
 }
 
 buscaCliente.addEventListener("input", () => {
