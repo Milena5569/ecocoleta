@@ -7,7 +7,7 @@ const mesInicialPainel = document.querySelector("#dashboard-start-month");
 const mesFinalPainel = document.querySelector("#dashboard-end-month");
 const erroPeriodoPainel = document.querySelector("#dashboard-period-error");
 
-const API_COLETAS_URL = "http://localhost:3000/api/coletas";
+const API_COLETAS_URL = "https://ecocoleta-production.up.railway.app/api/coletas";
 
 const formatadorQuantidade = new Intl.NumberFormat("pt-BR");
 const formatadorPercentual = new Intl.NumberFormat("pt-BR", {
