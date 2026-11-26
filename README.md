@@ -143,6 +143,6 @@ O sistema informa quando o mês inicial é posterior ao mês final. Ao limpar o 
 
 O Painel exibe um cartão de destaque em azul-escuro quando existem coletas com status **Agendada** cuja data já passou. O cartão lista o cliente e a data de cada coleta pendente. Ele fica oculto quando não há registros nessa situação e, quando um período é selecionado no painel, considera apenas as coletas dentro do intervalo escolhido.
 
-- Favicon em SVG com a inicial e as cores da identidade visual do EcoColeta, exibido na aba do navegador.
-- 
+Favicon em SVG com a inicial e as cores da identidade visual do EcoColeta, exibido na aba do navegador.
+
 

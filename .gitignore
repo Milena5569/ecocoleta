@@ -1,2 +1,2 @@
 node_modules/
-backend/.envGet-CimInstance Win32_Service -Filter "Name='MySQL80'" | Select-Object -ExpandProperty PathName
+backend/.env
